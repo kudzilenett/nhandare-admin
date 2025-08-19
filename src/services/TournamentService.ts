@@ -33,15 +33,16 @@ export interface TournamentListResponse {
 }
 
 export interface CreateTournamentData {
-  name: string;
+  title: string; // Changed from 'name' to match database schema
   description: string;
-  gameType: "chess" | "checkers" | "connect4" | "tictactoe";
-  maxParticipants: number;
+  gameType: "chess" | "checkers" | "connect4" | "tictactoe"; // Keep for form convenience, will be converted to gameId
+  maxPlayers: number; // Changed from 'maxParticipants' to match database schema
   entryFee: number;
   startDate: string;
   endDate: string;
-  isPublic: boolean;
-  prizeDistribution: {
+  // Removed 'isPublic' as it doesn't exist in database schema
+  prizeBreakdown: {
+    // Changed from 'prizeDistribution' to match database schema
     first: number;
     second: number;
     third: number;
@@ -139,8 +140,9 @@ class TournamentService {
           currentPlayers: number;
           entryFee: number;
           prizePool: number;
-          game?: { name: string };
+          game?: { id: string; name: string };
           isOnlineOnly: boolean;
+          prizeBreakdown?: { first: number; second: number; third: number };
           createdBy?: string;
           createdAt: string;
           updatedAt: string;
@@ -162,14 +164,15 @@ class TournamentService {
         currentPlayers: number;
         entryFee: number;
         prizePool: number;
-        game?: { name: string };
+        game?: { id: string; name: string };
         isOnlineOnly: boolean;
+        prizeBreakdown?: { first: number; second: number; third: number };
         createdBy?: string;
         createdAt: string;
         updatedAt: string;
       }) => ({
         id: tournament.id,
-        name: tournament.title,
+        title: tournament.title,
         description: tournament.description,
         startDate: new Date(tournament.startDate),
         endDate: new Date(tournament.endDate),
@@ -179,16 +182,17 @@ class TournamentService {
           | "ACTIVE"
           | "COMPLETED"
           | "CANCELLED",
-        maxParticipants: tournament.maxPlayers,
-        currentParticipants: tournament.currentPlayers,
+        maxPlayers: tournament.maxPlayers,
+        currentPlayers: tournament.currentPlayers,
         entryFee: tournament.entryFee,
         prizePool: tournament.prizePool,
+        gameId: tournament.game?.id || "default-game-id",
         gameType: (tournament.game?.name?.toLowerCase() || "chess") as
           | "chess"
           | "checkers"
           | "connect4"
           | "tictactoe",
-        isPublic: tournament.isOnlineOnly,
+        prizeBreakdown: tournament.prizeBreakdown || undefined,
         createdBy: tournament.createdBy || "admin",
         createdAt: new Date(tournament.createdAt),
         updatedAt: new Date(tournament.updatedAt),
@@ -215,23 +219,34 @@ class TournamentService {
       const gameId = await this.getGameIdFromType(data.gameType);
 
       // Calculate dates properly
+      const now = new Date();
       const startDate = new Date(data.startDate);
+
+      // Set registration end to 23:59:59 on the day before tournament starts
       const registrationEnd = new Date(startDate);
-      registrationEnd.setDate(registrationEnd.getDate() - 1); // End registration 1 day before tournament starts
+      registrationEnd.setDate(registrationEnd.getDate() - 1);
+      registrationEnd.setHours(23, 59, 59, 999); // End at 11:59:59 PM
+
+      // Ensure registration end is after registration start
+      // If the calculated end time is before now, set it to tomorrow at 11:59 PM
+      if (registrationEnd <= now) {
+        registrationEnd.setDate(now.getDate() + 1);
+        registrationEnd.setHours(23, 59, 59, 999);
+      }
 
       const backendData = {
-        title: data.name,
+        title: data.title,
         description: data.description,
         gameId: gameId,
-        maxPlayers: data.maxParticipants,
+        maxPlayers: data.maxPlayers,
         entryFee: data.entryFee,
-        prizePool: data.entryFee * data.maxParticipants, // Calculate prize pool
+        prizePool: data.entryFee * data.maxPlayers, // Calculate prize pool
         startDate: data.startDate,
         endDate: data.endDate,
-        registrationStart: new Date().toISOString(), // Start registration now
-        registrationEnd: registrationEnd.toISOString(), // End registration 1 day before tournament starts
-        isOnlineOnly: data.isPublic,
-        prizeBreakdown: data.prizeDistribution,
+        registrationStart: now.toISOString(), // Start registration now
+        registrationEnd: registrationEnd.toISOString(), // End registration before tournament starts
+        isOnlineOnly: true, // Default to online-only since isPublic doesn't exist in schema
+        prizeBreakdown: data.prizeBreakdown,
         bracketType: "SINGLE_ELIMINATION" as const,
       };
 
@@ -311,7 +326,20 @@ class TournamentService {
     id: string,
     data: UpdateTournamentData
   ): Promise<AdminTournament> {
-    return apiClient.put<AdminTournament>(`${this.baseUrl}/${id}`, data);
+    // Transform gameType to gameId if needed
+    const transformedData: UpdateTournamentData & { gameId?: string } = {
+      ...data,
+    };
+    if (data.gameType) {
+      const gameId = await this.getGameIdFromType(data.gameType);
+      transformedData.gameId = gameId;
+      delete transformedData.gameType; // Remove gameType from the request
+    }
+
+    return apiClient.put<AdminTournament>(
+      `${this.baseUrl}/${id}`,
+      transformedData
+    );
   }
 
   async deleteTournament(id: string): Promise<void> {

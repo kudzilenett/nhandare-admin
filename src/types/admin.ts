@@ -64,18 +64,25 @@ export interface SystemHealth {
 
 export interface AdminTournament {
   id: string;
-  name: string;
+  title: string; // Changed from 'name' to match database schema
   description: string;
   startDate: Date;
   endDate: Date;
   status: "OPEN" | "CLOSED" | "ACTIVE" | "COMPLETED" | "CANCELLED";
-  maxParticipants: number;
-  currentParticipants: number;
+  maxPlayers: number; // Changed from 'maxParticipants' to match database schema
+  currentPlayers: number; // Changed from 'currentParticipants' to match database schema
   entryFee: number;
   prizePool: number;
-  gameType: "chess" | "checkers" | "connect4" | "tictactoe";
-  isPublic: boolean;
-  createdBy: string;
+  gameId: string; // Changed from 'gameType' to match database schema (this will be the actual game ID)
+  gameType?: "chess" | "checkers" | "connect4" | "tictactoe"; // Optional for display purposes
+  prizeBreakdown?: {
+    // Added to match database schema
+    first: number;
+    second: number;
+    third: number;
+  };
+  // Removed 'isPublic' as it doesn't exist in database schema
+  createdBy?: string; // Made optional as it might not be included in all responses
   createdAt: Date;
   updatedAt: Date;
 }

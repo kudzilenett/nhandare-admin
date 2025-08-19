@@ -193,7 +193,7 @@ export default function TournamentsPage() {
       return;
     }
 
-    if (tournament.currentParticipants > 0) {
+    if (tournament.currentPlayers > 0) {
       toast.error(
         "Cannot delete tournaments with participants. Cancel the tournament first."
       );
@@ -346,8 +346,8 @@ export default function TournamentsPage() {
       {managingParticipants && (
         <ParticipantManager
           tournamentId={managingParticipants.id}
-          tournamentName={managingParticipants.name}
-          maxParticipants={managingParticipants.maxParticipants}
+          tournamentName={managingParticipants.title}
+          maxParticipants={managingParticipants.maxPlayers}
           onClose={() => setManagingParticipants(null)}
         />
       )}
@@ -563,7 +563,7 @@ export default function TournamentsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="max-w-xs">
                             <div className="text-sm font-medium text-gray-900 truncate">
-                              {tournament.name}
+                              {tournament.title}
                             </div>
                             <div className="text-sm text-gray-500 truncate">
                               {tournament.description}
@@ -582,7 +582,7 @@ export default function TournamentsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span
                             className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                              gameTypeColors[tournament.gameType]
+                              gameTypeColors[tournament.gameType || "chess"]
                             }`}
                           >
                             {tournament.gameType}
@@ -592,16 +592,16 @@ export default function TournamentsPage() {
                           <div className="flex items-center">
                             <UserGroupIcon className="h-4 w-4 text-gray-400 mr-1" />
                             <span className="text-sm text-gray-900">
-                              {tournament.currentParticipants}/
-                              {tournament.maxParticipants}
+                              {tournament.currentPlayers}/
+                              {tournament.maxPlayers}
                             </span>
                             <div className="ml-2 flex-1 bg-gray-200 rounded-full h-2 max-w-20">
                               <div
                                 className="bg-admin-accent h-2 rounded-full"
                                 style={{
                                   width: `${
-                                    (tournament.currentParticipants /
-                                      tournament.maxParticipants) *
+                                    (tournament.currentPlayers /
+                                      tournament.maxPlayers) *
                                     100
                                   }%`,
                                 }}
@@ -695,7 +695,7 @@ export default function TournamentsPage() {
 
                             {/* Delete - Only for empty draft tournaments */}
                             {tournament.status === "OPEN" &&
-                              tournament.currentParticipants === 0 && (
+                              tournament.currentPlayers === 0 && (
                                 <button
                                   onClick={() =>
                                     handleDeleteTournament(tournament.id)
@@ -709,7 +709,7 @@ export default function TournamentsPage() {
                               )}
 
                             {/* Manage Participants - For tournaments with participants */}
-                            {tournament.currentParticipants > 0 && (
+                            {tournament.currentPlayers > 0 && (
                               <button
                                 onClick={() =>
                                   setManagingParticipants(tournament)
@@ -859,7 +859,7 @@ export default function TournamentsPage() {
           <div className="relative p-8 border w-11/12 max-w-2xl mx-auto rounded-lg shadow-lg bg-white">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                {selectedTournamentDetails.name}
+                {selectedTournamentDetails.title}
               </h3>
               <button
                 onClick={() => setShowTournamentDetails(false)}
@@ -895,7 +895,9 @@ export default function TournamentsPage() {
                 <p className="mt-1 text-sm text-gray-500">
                   <span
                     className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                      gameTypeColors[selectedTournamentDetails.gameType]
+                      gameTypeColors[
+                        selectedTournamentDetails.gameType || "chess"
+                      ]
                     }`}
                   >
                     {selectedTournamentDetails.gameType}
@@ -919,8 +921,8 @@ export default function TournamentsPage() {
                   Participants:
                 </p>
                 <p className="mt-1 text-sm text-gray-500">
-                  {selectedTournamentDetails.currentParticipants}/
-                  {selectedTournamentDetails.maxParticipants}
+                  {selectedTournamentDetails.currentPlayers}/
+                  {selectedTournamentDetails.maxPlayers}
                 </p>
               </div>
               <div>
@@ -947,9 +949,7 @@ export default function TournamentsPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Public:</p>
-                <p className="mt-1 text-sm text-gray-500">
-                  {selectedTournamentDetails.isPublic ? "Yes" : "No"}
-                </p>
+                <p className="mt-1 text-sm text-gray-500">{"Online Only"}</p>
               </div>
             </div>
             <div className="mt-4 flex justify-end space-x-2">

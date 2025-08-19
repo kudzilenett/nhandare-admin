@@ -9,10 +9,10 @@ import { CreateTournamentData } from "@/services/TournamentService";
 
 const tournamentSchema = z
   .object({
-    name: z
+    title: z
       .string()
-      .min(3, "Tournament name must be at least 3 characters")
-      .max(100, "Tournament name must be less than 100 characters"),
+      .min(3, "Tournament title must be at least 3 characters")
+      .max(100, "Tournament title must be less than 100 characters"),
     description: z
       .string()
       .min(10, "Description must be at least 10 characters")
@@ -20,15 +20,15 @@ const tournamentSchema = z
     gameType: z.enum(["chess", "checkers", "connect4", "tictactoe"], {
       message: "Please select a game type",
     }),
-    maxParticipants: z
+    maxPlayers: z
       .number()
       .min(4, "Minimum 4 participants required")
       .max(256, "Maximum 256 participants allowed"),
     entryFee: z.number().min(0, "Entry fee cannot be negative"),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().min(1, "End date is required"),
-    isPublic: z.boolean(),
-    prizeDistribution: z.object({
+    prizeBreakdown: z.object({
+      // Changed from 'prizeDistribution' to match database schema
       first: z
         .number()
         .min(0, "First place prize cannot be negative")
@@ -57,14 +57,14 @@ const tournamentSchema = z
   .refine(
     (data) => {
       const total =
-        data.prizeDistribution.first +
-        data.prizeDistribution.second +
-        data.prizeDistribution.third;
+        data.prizeBreakdown.first +
+        data.prizeBreakdown.second +
+        data.prizeBreakdown.third;
       return total <= 100;
     },
     {
-      message: "Total prize distribution cannot exceed 100%",
-      path: ["prizeDistribution"],
+      message: "Total prize breakdown cannot exceed 100%",
+      path: ["prizeBreakdown"],
     }
   );
 
@@ -106,32 +106,29 @@ export default function TournamentForm({
     register,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors },
   } = useForm<TournamentFormData>({
     resolver: zodResolver(tournamentSchema),
     defaultValues: tournament
       ? {
-          name: tournament.name,
+          title: tournament.title,
           description: tournament.description,
-          gameType: tournament.gameType,
-          maxParticipants: tournament.maxParticipants,
+          gameType: tournament.gameType || "chess",
+          maxPlayers: tournament.maxPlayers,
           entryFee: tournament.entryFee,
           startDate: new Date(tournament.startDate).toISOString().split("T")[0],
           endDate: new Date(tournament.endDate).toISOString().split("T")[0],
-          isPublic: tournament.isPublic,
-          prizeDistribution: {
-            first: 50, // Default values - should come from tournament data
+          prizeBreakdown: tournament.prizeBreakdown || {
+            first: 50, // Default values when no breakdown exists
             second: 30,
             third: 20,
           },
         }
       : {
           gameType: "chess",
-          maxParticipants: 16,
+          maxPlayers: 16,
           entryFee: 0,
-          isPublic: true,
-          prizeDistribution: {
+          prizeBreakdown: {
             first: 50,
             second: 30,
             third: 20,
@@ -140,24 +137,22 @@ export default function TournamentForm({
   });
 
   const entryFee = watch("entryFee");
-  const prizeDistribution = watch("prizeDistribution");
+  const prizeBreakdown = watch("prizeBreakdown");
 
   // Calculate prize pool
   const calculatePrizePool = () => {
-    const maxParticipants = watch("maxParticipants");
-    return maxParticipants * entryFee;
+    const maxPlayers = watch("maxPlayers");
+    return maxPlayers * entryFee;
   };
 
   // Calculate actual prize amounts
   const calculatePrizeAmounts = () => {
     const prizePool = calculatePrizePool();
     return {
-      first:
-        Math.round(((prizePool * prizeDistribution.first) / 100) * 100) / 100,
+      first: Math.round(((prizePool * prizeBreakdown.first) / 100) * 100) / 100,
       second:
-        Math.round(((prizePool * prizeDistribution.second) / 100) * 100) / 100,
-      third:
-        Math.round(((prizePool * prizeDistribution.third) / 100) * 100) / 100,
+        Math.round(((prizePool * prizeBreakdown.second) / 100) * 100) / 100,
+      third: Math.round(((prizePool * prizeBreakdown.third) / 100) * 100) / 100,
     };
   };
 
@@ -186,23 +181,23 @@ export default function TournamentForm({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="lg:col-span-2">
               <label
-                htmlFor="name"
+                htmlFor="title"
                 className="block text-sm font-medium text-gray-700"
               >
-                Tournament Name *
+                Tournament Title *
               </label>
               <input
-                {...register("name")}
+                {...register("title")}
                 type="text"
-                id="name"
+                id="title"
                 className={`mt-1 block w-full rounded-md border ${
-                  errors.name ? "border-red-300" : "border-gray-300"
+                  errors.title ? "border-red-300" : "border-gray-300"
                 } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
-                placeholder="Enter tournament name"
+                placeholder="Enter tournament title"
               />
-              {errors.name && (
+              {errors.title && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.name.message}
+                  {errors.title.message}
                 </p>
               )}
             </div>
@@ -259,16 +254,16 @@ export default function TournamentForm({
 
             <div>
               <label
-                htmlFor="maxParticipants"
+                htmlFor="maxPlayers"
                 className="block text-sm font-medium text-gray-700"
               >
-                Max Participants *
+                Max Players *
               </label>
               <select
-                {...register("maxParticipants", { valueAsNumber: true })}
-                id="maxParticipants"
+                {...register("maxPlayers", { valueAsNumber: true })}
+                id="maxPlayers"
                 className={`mt-1 block w-full rounded-md border ${
-                  errors.maxParticipants ? "border-red-300" : "border-gray-300"
+                  errors.maxPlayers ? "border-red-300" : "border-gray-300"
                 } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
               >
                 {participantOptions.map((option) => (
@@ -277,9 +272,9 @@ export default function TournamentForm({
                   </option>
                 ))}
               </select>
-              {errors.maxParticipants && (
+              {errors.maxPlayers && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.maxParticipants.message}
+                  {errors.maxPlayers.message}
                 </p>
               )}
             </div>
@@ -385,7 +380,7 @@ export default function TournamentForm({
                     1st Place (${prizeAmounts.first.toFixed(2)})
                   </label>
                   <input
-                    {...register("prizeDistribution.first", {
+                    {...register("prizeBreakdown.first", {
                       valueAsNumber: true,
                     })}
                     type="number"
@@ -403,7 +398,7 @@ export default function TournamentForm({
                     2nd Place (${prizeAmounts.second.toFixed(2)})
                   </label>
                   <input
-                    {...register("prizeDistribution.second", {
+                    {...register("prizeBreakdown.second", {
                       valueAsNumber: true,
                     })}
                     type="number"
@@ -421,7 +416,7 @@ export default function TournamentForm({
                     3rd Place (${prizeAmounts.third.toFixed(2)})
                   </label>
                   <input
-                    {...register("prizeDistribution.third", {
+                    {...register("prizeBreakdown.third", {
                       valueAsNumber: true,
                     })}
                     type="number"
@@ -432,33 +427,11 @@ export default function TournamentForm({
                   />
                 </div>
               </div>
-              {errors.prizeDistribution && (
+              {errors.prizeBreakdown && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.prizeDistribution.message}
+                  {errors.prizeBreakdown.message}
                 </p>
               )}
-            </div>
-          </div>
-
-          {/* Settings */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Tournament Settings
-            </h3>
-
-            <div className="flex items-center">
-              <input
-                {...register("isPublic")}
-                type="checkbox"
-                id="isPublic"
-                className="h-4 w-4 text-admin-accent border-gray-300 rounded focus:ring-admin-accent"
-              />
-              <label
-                htmlFor="isPublic"
-                className="ml-2 block text-sm text-gray-700"
-              >
-                Make tournament public (visible to all users)
-              </label>
             </div>
           </div>
 
