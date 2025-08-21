@@ -241,7 +241,7 @@ export default function ParticipantManager({
               Manage Participants
             </h2>
             <p className="mt-1 text-sm text-gray-500">
-              {tournamentName} • {activeParticipants.length}/{maxParticipants}{" "}
+              {tournamentName} • {activeParticipants.length}/{maxParticipants}
               participants
             </p>
           </div>

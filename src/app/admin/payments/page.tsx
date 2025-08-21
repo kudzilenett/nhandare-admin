@@ -756,18 +756,18 @@ export default function PaymentsPage() {
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing{" "}
+                Showing
                 <span className="font-medium">
                   {(pagination.currentPage - 1) * pagination.itemsPerPage + 1}
-                </span>{" "}
-                to{" "}
+                </span>
+                to
                 <span className="font-medium">
                   {Math.min(
                     pagination.currentPage * pagination.itemsPerPage,
                     pagination.totalItems
                   )}
-                </span>{" "}
-                of <span className="font-medium">{pagination.totalItems}</span>{" "}
+                </span>
+                of <span className="font-medium">{pagination.totalItems}</span>
                 results
               </p>
             </div>

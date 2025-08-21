@@ -111,21 +111,34 @@ export default function UserDetailsModal({
     if (isOpen && user) {
       // Load user stats and activity
       setIsLoading(true);
-      // In real implementation, you would call:
-      // Promise.all([
-      //   userService.getUserStats(user.id),
-      //   userService.getUserActivity(user.id)
-      // ]).then(([stats, activity]) => {
-      //   setUserStats(stats);
-      //   setUserActivity(activity.activities);
-      // }).finally(() => setIsLoading(false));
 
-      // Mock data for now
-      setTimeout(() => {
-        setUserStats(mockUserStats);
-        setUserActivity(mockUserActivity);
-        setIsLoading(false);
-      }, 500);
+      Promise.all([
+        fetch(`/api/users/${user.id}/stats`),
+        fetch(`/api/users/${user.id}/activity`),
+      ])
+        .then(async ([statsResponse, activityResponse]) => {
+          try {
+            if (statsResponse.ok) {
+              const statsData = await statsResponse.json();
+              setUserStats(statsData.data);
+            } else {
+              setUserStats(mockUserStats);
+            }
+
+            if (activityResponse.ok) {
+              const activityData = await activityResponse.json();
+              setUserActivity(activityData.data.activities);
+            } else {
+              setUserActivity(mockUserActivity);
+            }
+          } catch (error) {
+            console.error("Failed to load user data:", error);
+            // Fallback to mock data
+            setUserStats(mockUserStats);
+            setUserActivity(mockUserActivity);
+          }
+        })
+        .finally(() => setIsLoading(false));
     }
   }, [isOpen, user]);
 

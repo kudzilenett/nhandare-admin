@@ -353,7 +353,7 @@ export default function AnalyticsPage() {
           {matchmakingData && (
             <div className="text-right">
               <p className="text-xs text-green-600">
-                Last Updated:{" "}
+                Last Updated:
                 {new Date(matchmakingData.period.endDate).toLocaleTimeString()}
               </p>
             </div>
@@ -491,7 +491,7 @@ export default function AnalyticsPage() {
             </ResponsiveContainer>
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-600">
-                Total Active Sessions:{" "}
+                Total Active Sessions:
                 <strong>{onlineData.activeSessions}</strong>
               </p>
             </div>
@@ -617,14 +617,14 @@ export default function AnalyticsPage() {
                 </p>
                 <div className="mt-4 p-3 bg-gray-50 rounded-lg text-center">
                   <p className="text-sm text-gray-600">
-                    Data Period:{" "}
+                    Data Period:
                     <strong>{matchmakingData.period.days} days</strong>
                     <br />
                     <span className="text-xs">
                       {new Date(
                         matchmakingData.period.startDate
-                      ).toLocaleDateString()}{" "}
-                      -{" "}
+                      ).toLocaleDateString()}
+                      -
                       {new Date(
                         matchmakingData.period.endDate
                       ).toLocaleDateString()}
@@ -677,10 +677,10 @@ export default function AnalyticsPage() {
               {matchmakingData.performance.averageRatingDifference && (
                 <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                   <p className="text-sm text-gray-600">
-                    <strong>Match Quality:</strong> Average rating difference of{" "}
+                    <strong>Match Quality:</strong> Average rating difference of
                     <span className="font-semibold text-blue-600">
                       ±{matchmakingData.performance.averageRatingDifference}
-                    </span>{" "}
+                    </span>
                     points between players
                   </p>
                 </div>

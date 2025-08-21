@@ -730,15 +730,15 @@ export default function UsersPage() {
                 <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm text-gray-700">
-                      Showing{" "}
+                      Showing
                       <span className="font-medium">
                         {(currentPage - 1) * pageSize + 1}
-                      </span>{" "}
-                      to{" "}
+                      </span>
+                      to
                       <span className="font-medium">
                         {Math.min(currentPage * pageSize, totalUsers)}
-                      </span>{" "}
-                      of <span className="font-medium">{totalUsers}</span>{" "}
+                      </span>
+                      of <span className="font-medium">{totalUsers}</span>
                       results
                     </p>
                   </div>

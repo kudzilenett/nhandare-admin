@@ -576,7 +576,7 @@ export default function WithdrawalsPage() {
                           </div>
                           <div className="ml-3">
                             <p className="text-sm font-medium text-gray-900">
-                              {withdrawal.user?.firstName}{" "}
+                              {withdrawal.user?.firstName}
                               {withdrawal.user?.lastName}
                             </p>
                             <p className="text-sm text-gray-500">
@@ -721,24 +721,24 @@ export default function WithdrawalsPage() {
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
               <p className="text-sm text-gray-700">
-                Showing{" "}
+                Showing
                 <span className="font-medium">
                   {((pagination?.currentPage || 1) - 1) *
                     (pagination?.itemsPerPage || 20) +
                     1}
-                </span>{" "}
-                to{" "}
+                </span>
+                to
                 <span className="font-medium">
                   {Math.min(
                     (pagination?.currentPage || 1) *
                       (pagination?.itemsPerPage || 20),
                     pagination?.totalItems || 0
                   )}
-                </span>{" "}
-                of{" "}
+                </span>
+                of
                 <span className="font-medium">
                   {pagination?.totalItems || 0}
-                </span>{" "}
+                </span>
                 results
               </p>
             </div>

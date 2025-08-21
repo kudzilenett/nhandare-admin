@@ -367,7 +367,7 @@ export default function PaymentDetailsModal({
                               </div>
                               <div>
                                 <p className="text-sm font-medium text-gray-900">
-                                  {payment.user.firstName}{" "}
+                                  {payment.user.firstName}
                                   {payment.user.lastName}
                                 </p>
                                 <p className="text-sm text-gray-500">
@@ -532,10 +532,10 @@ export default function PaymentDetailsModal({
                                     <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                                       <div>
                                         <p className="text-sm text-gray-500">
-                                          {entry.action}{" "}
+                                          {entry.action}
                                           {entry.previousStatus && (
                                             <span className="font-medium">
-                                              from {entry.previousStatus} to{" "}
+                                              from {entry.previousStatus} to
                                               {entry.newStatus}
                                             </span>
                                           )}
@@ -599,7 +599,7 @@ export default function PaymentDetailsModal({
                                     </div>
                                   </div>
                                   <div className="mt-2 text-xs text-gray-500">
-                                    Processed by {refund.processedBy} on{" "}
+                                    Processed by {refund.processedBy} on
                                     {new Date(
                                       refund.createdAt
                                     ).toLocaleString()}
