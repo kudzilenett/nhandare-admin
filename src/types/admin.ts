@@ -85,6 +85,29 @@ export interface AdminTournament {
   createdBy?: string; // Made optional as it might not be included in all responses
   createdAt: Date;
   updatedAt: Date;
+  // New bracket configuration fields
+  bracketType?:
+    | "SINGLE_ELIMINATION"
+    | "DOUBLE_ELIMINATION"
+    | "ROUND_ROBIN"
+    | "SWISS";
+  useAdvancedSeeding?: boolean;
+  bracketConfig?: {
+    useAdvancedSeeding: boolean;
+    seedingOptions?: {
+      includePerformance: boolean;
+      includeHistory: boolean;
+      includeRegional: boolean;
+      includeConsistency: boolean;
+      performanceWeight: number;
+      historyWeight: number;
+      regionalWeight: number;
+      consistencyWeight: number;
+      ratingWeight: number;
+      recentTournaments: number;
+      regionalRadius: number;
+    };
+  };
 }
 
 export interface PlatformUser {

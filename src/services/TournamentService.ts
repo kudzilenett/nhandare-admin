@@ -47,6 +47,13 @@ export interface CreateTournamentData {
     second: number;
     third: number;
   };
+  // New bracket configuration fields
+  bracketType:
+    | "SINGLE_ELIMINATION"
+    | "DOUBLE_ELIMINATION"
+    | "ROUND_ROBIN"
+    | "SWISS";
+  useAdvancedSeeding: boolean;
 }
 
 export interface UpdateTournamentData extends Partial<CreateTournamentData> {
@@ -146,6 +153,25 @@ class TournamentService {
           createdBy?: string;
           createdAt: string;
           updatedAt: string;
+          // Add bracket configuration fields
+          bracketType?: string;
+          useAdvancedSeeding?: boolean;
+          bracketConfig?: {
+            useAdvancedSeeding: boolean;
+            seedingOptions?: {
+              includePerformance: boolean;
+              includeHistory: boolean;
+              includeRegional: boolean;
+              includeConsistency: boolean;
+              performanceWeight: number;
+              historyWeight: number;
+              regionalWeight: number;
+              consistencyWeight: number;
+              ratingWeight: number;
+              recentTournaments: number;
+              regionalRadius: number;
+            };
+          };
         }>;
         pagination: PaginationInfo;
       };
@@ -170,6 +196,25 @@ class TournamentService {
         createdBy?: string;
         createdAt: string;
         updatedAt: string;
+        // Add bracket configuration fields
+        bracketType?: string;
+        useAdvancedSeeding?: boolean;
+        bracketConfig?: {
+          useAdvancedSeeding: boolean;
+          seedingOptions?: {
+            includePerformance: boolean;
+            includeHistory: boolean;
+            includeRegional: boolean;
+            includeConsistency: boolean;
+            performanceWeight: number;
+            historyWeight: number;
+            regionalWeight: number;
+            consistencyWeight: number;
+            ratingWeight: number;
+            recentTournaments: number;
+            regionalRadius: number;
+          };
+        };
       }) => ({
         id: tournament.id,
         title: tournament.title,
@@ -196,6 +241,15 @@ class TournamentService {
         createdBy: tournament.createdBy || "admin",
         createdAt: new Date(tournament.createdAt),
         updatedAt: new Date(tournament.updatedAt),
+        // Map bracket configuration fields
+        bracketType: tournament.bracketType as
+          | "SINGLE_ELIMINATION"
+          | "DOUBLE_ELIMINATION"
+          | "ROUND_ROBIN"
+          | "SWISS"
+          | undefined,
+        useAdvancedSeeding: tournament.useAdvancedSeeding || false,
+        bracketConfig: tournament.bracketConfig || undefined,
       })
     );
 
@@ -247,7 +301,27 @@ class TournamentService {
         registrationEnd: registrationEnd.toISOString(), // End registration before tournament starts
         isOnlineOnly: true, // Default to online-only since isPublic doesn't exist in schema
         prizeBreakdown: data.prizeBreakdown,
-        bracketType: "SINGLE_ELIMINATION" as const,
+        bracketType: data.bracketType,
+        useAdvancedSeeding: data.useAdvancedSeeding,
+        // Add bracket configuration if advanced seeding is enabled
+        bracketConfig: data.useAdvancedSeeding
+          ? {
+              useAdvancedSeeding: true,
+              seedingOptions: {
+                includePerformance: true,
+                includeHistory: true,
+                includeRegional: false,
+                includeConsistency: true,
+                performanceWeight: 0.25,
+                historyWeight: 0.2,
+                regionalWeight: 0.1,
+                consistencyWeight: 0.05,
+                ratingWeight: 0.4,
+                recentTournaments: 5,
+                regionalRadius: 100,
+              },
+            }
+          : undefined,
       };
 
       console.log("Creating tournament with data:", backendData);

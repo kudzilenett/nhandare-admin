@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,6 +27,13 @@ const tournamentSchema = z
     entryFee: z.number().min(0, "Entry fee cannot be negative"),
     startDate: z.string().min(1, "Start date is required"),
     endDate: z.string().min(1, "End date is required"),
+    bracketType: z.enum(
+      ["SINGLE_ELIMINATION", "DOUBLE_ELIMINATION", "ROUND_ROBIN", "SWISS"],
+      {
+        message: "Please select a bracket type",
+      }
+    ),
+    useAdvancedSeeding: z.boolean().default(false),
     prizeBreakdown: z.object({
       // Changed from 'prizeDistribution' to match database schema
       first: z
@@ -60,10 +67,10 @@ const tournamentSchema = z
         data.prizeBreakdown.first +
         data.prizeBreakdown.second +
         data.prizeBreakdown.third;
-      return total <= 100;
+      return total === 100;
     },
     {
-      message: "Total prize breakdown cannot exceed 100%",
+      message: "Prize breakdown must equal 100%",
       path: ["prizeBreakdown"],
     }
   );
@@ -84,6 +91,31 @@ const gameTypeOptions = [
   { value: "tictactoe", label: "Tic Tac Toe" },
 ];
 
+const bracketTypeOptions = [
+  {
+    value: "SINGLE_ELIMINATION",
+    label: "Single Elimination",
+    description: "Players are eliminated after one loss - Simple & fast",
+  },
+  {
+    value: "DOUBLE_ELIMINATION",
+    label: "Double Elimination",
+    description:
+      "Players must lose twice to be eliminated - Fairer competition",
+  },
+  {
+    value: "ROUND_ROBIN",
+    label: "Round Robin",
+    description: "Every player faces every other player - Most comprehensive",
+  },
+  {
+    value: "SWISS",
+    label: "Swiss System",
+    description:
+      "Players face opponents with similar records - Balanced matches",
+  },
+];
+
 const participantOptions = [
   { value: 4, label: "4 participants" },
   { value: 8, label: "8 participants" },
@@ -101,11 +133,13 @@ export default function TournamentForm({
   isLoading = false,
 }: TournamentFormProps) {
   const isEditing = !!tournament;
+  const [showAdvancedSeeding, setShowAdvancedSeeding] = useState(false);
 
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<TournamentFormData>({
     resolver: zodResolver(tournamentSchema),
@@ -118,6 +152,8 @@ export default function TournamentForm({
           entryFee: tournament.entryFee,
           startDate: new Date(tournament.startDate).toISOString().split("T")[0],
           endDate: new Date(tournament.endDate).toISOString().split("T")[0],
+          bracketType: tournament.bracketType || "SINGLE_ELIMINATION",
+          useAdvancedSeeding: tournament.useAdvancedSeeding ?? false,
           prizeBreakdown: tournament.prizeBreakdown || {
             first: 50, // Default values when no breakdown exists
             second: 30,
@@ -128,6 +164,8 @@ export default function TournamentForm({
           gameType: "chess",
           maxPlayers: 16,
           entryFee: 0,
+          bracketType: "SINGLE_ELIMINATION",
+          useAdvancedSeeding: false,
           prizeBreakdown: {
             first: 50,
             second: 30,
@@ -138,6 +176,8 @@ export default function TournamentForm({
 
   const entryFee = watch("entryFee");
   const prizeBreakdown = watch("prizeBreakdown");
+  const bracketType = watch("bracketType");
+  const useAdvancedSeeding = watch("useAdvancedSeeding");
 
   // Calculate prize pool
   const calculatePrizePool = () => {
@@ -157,7 +197,21 @@ export default function TournamentForm({
   };
 
   const onFormSubmit = async (data: TournamentFormData) => {
-    await onSubmit(data);
+    // Transform the form data to match CreateTournamentData interface
+    const transformedData: CreateTournamentData = {
+      title: data.title,
+      description: data.description,
+      gameType: data.gameType,
+      maxPlayers: data.maxPlayers,
+      entryFee: data.entryFee,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      prizeBreakdown: data.prizeBreakdown,
+      // Add bracket type and advanced seeding to the backend data
+      bracketType: data.bracketType,
+      useAdvancedSeeding: data.useAdvancedSeeding,
+    };
+    await onSubmit(transformedData);
   };
 
   const prizeAmounts = calculatePrizeAmounts();
@@ -257,7 +311,7 @@ export default function TournamentForm({
                 htmlFor="maxPlayers"
                 className="block text-sm font-medium text-gray-700"
               >
-                Max Players *
+                Max Participants *
               </label>
               <select
                 {...register("maxPlayers", { valueAsNumber: true })}
@@ -277,6 +331,45 @@ export default function TournamentForm({
                   {errors.maxPlayers.message}
                 </p>
               )}
+            </div>
+
+            <div>
+              <label
+                htmlFor="entryFee"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Entry Fee (USD) *
+              </label>
+              <input
+                {...register("entryFee", { valueAsNumber: true })}
+                type="number"
+                id="entryFee"
+                min="0"
+                step="0.01"
+                className={`mt-1 block w-full rounded-md border ${
+                  errors.entryFee ? "border-red-300" : "border-gray-300"
+                } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                placeholder="0.00"
+              />
+              {errors.entryFee && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.entryFee.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
+                Prize Pool
+              </label>
+              <div className="mt-1 p-3 bg-gray-50 rounded-md">
+                <span className="text-lg font-semibold text-gray-900">
+                  ${calculatePrizePool().toFixed(2)}
+                </span>
+                <p className="text-sm text-gray-500">
+                  {watch("maxPlayers")} players × ${entryFee} entry fee
+                </p>
+              </div>
             </div>
 
             <div>
@@ -324,159 +417,240 @@ export default function TournamentForm({
             </div>
           </div>
 
-          {/* Financial Settings */}
-          <div className="border-t pt-6">
+          {/* Bracket Configuration */}
+          <div className="border-t border-gray-200 pt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
-              Financial Settings
+              Bracket Configuration
             </h3>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div>
                 <label
-                  htmlFor="entryFee"
+                  htmlFor="bracketType"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Entry Fee ($)
+                  Tournament Format *
                 </label>
-                <input
-                  {...register("entryFee", { valueAsNumber: true })}
-                  type="number"
-                  id="entryFee"
-                  min="0"
-                  step="0.01"
+                <select
+                  {...register("bracketType")}
+                  id="bracketType"
                   className={`mt-1 block w-full rounded-md border ${
-                    errors.entryFee ? "border-red-300" : "border-gray-300"
+                    errors.bracketType ? "border-red-300" : "border-gray-300"
                   } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
-                  placeholder="0.00"
-                />
-                {errors.entryFee && (
+                >
+                  {bracketTypeOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                {errors.bracketType && (
                   <p className="mt-1 text-sm text-red-600">
-                    {errors.entryFee.message}
+                    {errors.bracketType.message}
                   </p>
                 )}
+                <p className="mt-1 text-sm text-gray-500">
+                  {
+                    bracketTypeOptions.find((opt) => opt.value === bracketType)
+                      ?.description
+                  }
+                </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700">
-                  Total Prize Pool
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Advanced Seeding
                 </label>
-                <div className="mt-1 px-3 py-2 bg-gray-50 border border-gray-300 rounded-md text-sm text-gray-900">
-                  ${calculatePrizePool().toFixed(2)}
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="useAdvancedSeeding"
+                    {...register("useAdvancedSeeding")}
+                    className="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="useAdvancedSeeding"
+                    className="ml-2 block text-sm text-gray-900"
+                  >
+                    Use advanced seeding algorithms
+                  </label>
                 </div>
+                <p className="mt-1 text-sm text-gray-500">
+                  Advanced seeding considers player performance, history, and
+                  regional factors for more balanced matchups.
+                </p>
               </div>
             </div>
 
-            {/* Prize Distribution */}
-            <div className="mt-6">
-              <h4 className="text-sm font-medium text-gray-700 mb-3">
-                Prize Distribution (%)
-              </h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                  <label
-                    htmlFor="firstPlace"
-                    className="block text-xs font-medium text-gray-600"
+            {useAdvancedSeeding && (
+              <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <div className="flex items-center">
+                  <svg
+                    className="w-5 h-5 text-blue-600 mr-2"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
                   >
-                    1st Place (${prizeAmounts.first.toFixed(2)})
-                  </label>
-                  <input
-                    {...register("prizeBreakdown.first", {
-                      valueAsNumber: true,
-                    })}
-                    type="number"
-                    id="firstPlace"
-                    min="0"
-                    max="100"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm"
-                  />
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="text-sm font-medium text-blue-800">
+                    Advanced Seeding Enabled
+                  </span>
                 </div>
-                <div>
-                  <label
-                    htmlFor="secondPlace"
-                    className="block text-xs font-medium text-gray-600"
-                  >
-                    2nd Place (${prizeAmounts.second.toFixed(2)})
-                  </label>
-                  <input
-                    {...register("prizeBreakdown.second", {
-                      valueAsNumber: true,
-                    })}
-                    type="number"
-                    id="secondPlace"
-                    min="0"
-                    max="100"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="thirdPlace"
-                    className="block text-xs font-medium text-gray-600"
-                  >
-                    3rd Place (${prizeAmounts.third.toFixed(2)})
-                  </label>
-                  <input
-                    {...register("prizeBreakdown.third", {
-                      valueAsNumber: true,
-                    })}
-                    type="number"
-                    id="thirdPlace"
-                    min="0"
-                    max="100"
-                    className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm"
-                  />
-                </div>
+                <p className="mt-2 text-sm text-blue-700">
+                  This tournament will use sophisticated seeding algorithms that
+                  consider multiple factors including player ratings, recent
+                  performance, tournament history, and regional considerations
+                  to create the most balanced matchups possible.
+                </p>
               </div>
-              {errors.prizeBreakdown && (
+            )}
+          </div>
+
+          {/* Prize Breakdown */}
+          <div className="border-t border-gray-200 pt-6">
+            <h3 className="text-lg font-medium text-gray-900 mb-4">
+              Prize Distribution
+            </h3>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div>
+                <label
+                  htmlFor="firstPrize"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  First Place (%) *
+                </label>
+                <input
+                  {...register("prizeBreakdown.first", { valueAsNumber: true })}
+                  type="number"
+                  id="firstPrize"
+                  min="0"
+                  max="100"
+                  className={`mt-1 block w-full rounded-md border ${
+                    errors.prizeBreakdown?.first
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                  placeholder="50"
+                />
+                {errors.prizeBreakdown?.first && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.prizeBreakdown.first.message}
+                  </p>
+                )}
+                <p className="mt-1 text-sm text-gray-500">
+                  ${prizeAmounts.first.toFixed(2)}
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="secondPrize"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Second Place (%) *
+                </label>
+                <input
+                  {...register("prizeBreakdown.second", {
+                    valueAsNumber: true,
+                  })}
+                  type="number"
+                  id="secondPrize"
+                  min="0"
+                  max="100"
+                  className={`mt-1 block w-full rounded-md border ${
+                    errors.prizeBreakdown?.second
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                  placeholder="30"
+                />
+                {errors.prizeBreakdown?.second && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.prizeBreakdown.second.message}
+                  </p>
+                )}
+                <p className="mt-1 text-sm text-gray-500">
+                  ${prizeAmounts.second.toFixed(2)}
+                </p>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="thirdPrize"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Third Place (%) *
+                </label>
+                <input
+                  {...register("prizeBreakdown.third", { valueAsNumber: true })}
+                  type="number"
+                  id="thirdPrize"
+                  min="0"
+                  max="100"
+                  className={`mt-1 block w-full rounded-md border ${
+                    errors.prizeBreakdown?.third
+                      ? "border-red-300"
+                      : "border-gray-300"
+                  } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                  placeholder="20"
+                />
+                {errors.prizeBreakdown?.third && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.prizeBreakdown.third.message}
+                  </p>
+                )}
+                <p className="mt-1 text-sm text-gray-500">
+                  ${prizeAmounts.third.toFixed(2)}
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-medium text-gray-700">
+                  Total Distribution:
+                </span>
+                <span className="text-sm font-medium text-gray-900">
+                  {prizeBreakdown.first +
+                    prizeBreakdown.second +
+                    prizeBreakdown.third}
+                  %
+                </span>
+              </div>
+              {prizeBreakdown.first +
+                prizeBreakdown.second +
+                prizeBreakdown.third !==
+                100 && (
                 <p className="mt-1 text-sm text-red-600">
-                  {errors.prizeBreakdown.message}
+                  ⚠️ Prize distribution must equal 100%
                 </p>
               )}
             </div>
           </div>
 
           {/* Form Actions */}
-          <div className="border-t pt-6 flex justify-end space-x-3">
+          <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-accent"
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-accent"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 text-sm font-medium text-white bg-admin-accent border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-accent disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-admin-accent hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-accent disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLoading ? (
-                <div className="flex items-center">
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    />
-                  </svg>
-                  {isEditing ? "Updating..." : "Creating..."}
-                </div>
-              ) : isEditing ? (
-                "Update Tournament"
-              ) : (
-                "Create Tournament"
-              )}
+              {isLoading
+                ? "Saving..."
+                : isEditing
+                ? "Update Tournament"
+                : "Create Tournament"}
             </button>
           </div>
         </form>
