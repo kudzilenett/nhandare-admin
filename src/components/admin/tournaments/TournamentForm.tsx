@@ -33,7 +33,7 @@ const tournamentSchema = z
         message: "Please select a bracket type",
       }
     ),
-    useAdvancedSeeding: z.boolean().default(false),
+    useAdvancedSeeding: z.boolean(),
     prizeBreakdown: z.object({
       // Changed from 'prizeDistribution' to match database schema
       first: z
@@ -153,7 +153,8 @@ export default function TournamentForm({
           startDate: new Date(tournament.startDate).toISOString().split("T")[0],
           endDate: new Date(tournament.endDate).toISOString().split("T")[0],
           bracketType: tournament.bracketType || "SINGLE_ELIMINATION",
-          useAdvancedSeeding: tournament.useAdvancedSeeding ?? false,
+          useAdvancedSeeding:
+            tournament.bracketConfig?.useAdvancedSeeding ?? false,
           prizeBreakdown: tournament.prizeBreakdown || {
             first: 50, // Default values when no breakdown exists
             second: 30,
@@ -207,9 +208,24 @@ export default function TournamentForm({
       startDate: data.startDate,
       endDate: data.endDate,
       prizeBreakdown: data.prizeBreakdown,
-      // Add bracket type and advanced seeding to the backend data
       bracketType: data.bracketType,
-      useAdvancedSeeding: data.useAdvancedSeeding,
+      // Add bracket configuration with advanced seeding
+      bracketConfig: {
+        useAdvancedSeeding: data.useAdvancedSeeding,
+        seedingOptions: {
+          includePerformance: true,
+          includeHistory: true,
+          includeRegional: false,
+          includeConsistency: true,
+          performanceWeight: 0.4,
+          historyWeight: 0.3,
+          regionalWeight: 0.1,
+          consistencyWeight: 0.2,
+          ratingWeight: 0.5,
+          recentTournaments: 10,
+          regionalRadius: 100,
+        },
+      },
     };
     await onSubmit(transformedData);
   };
@@ -223,7 +239,7 @@ export default function TournamentForm({
           <h2 className="text-xl font-semibold text-gray-900">
             {isEditing ? "Edit Tournament" : "Create New Tournament"}
           </h2>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-700">
             {isEditing
               ? "Update tournament details and settings"
               : "Set up a new tournament for players to join"}
@@ -236,7 +252,7 @@ export default function TournamentForm({
             <div className="lg:col-span-2">
               <label
                 htmlFor="title"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-800"
               >
                 Tournament Title *
               </label>
@@ -246,7 +262,7 @@ export default function TournamentForm({
                 id="title"
                 className={`mt-1 block w-full rounded-md border ${
                   errors.title ? "border-red-300" : "border-gray-300"
-                } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900 placeholder-gray-500`}
                 placeholder="Enter tournament title"
               />
               {errors.title && (
@@ -259,7 +275,7 @@ export default function TournamentForm({
             <div className="lg:col-span-2">
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-800"
               >
                 Description *
               </label>
@@ -269,7 +285,7 @@ export default function TournamentForm({
                 rows={4}
                 className={`mt-1 block w-full rounded-md border ${
                   errors.description ? "border-red-300" : "border-gray-300"
-                } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900 placeholder-gray-500`}
                 placeholder="Enter tournament description"
               />
               {errors.description && (
@@ -282,7 +298,7 @@ export default function TournamentForm({
             <div>
               <label
                 htmlFor="gameType"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-800"
               >
                 Game Type *
               </label>
@@ -291,7 +307,7 @@ export default function TournamentForm({
                 id="gameType"
                 className={`mt-1 block w-full rounded-md border ${
                   errors.gameType ? "border-red-300" : "border-gray-300"
-                } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900`}
               >
                 {gameTypeOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -309,7 +325,7 @@ export default function TournamentForm({
             <div>
               <label
                 htmlFor="maxPlayers"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-800"
               >
                 Max Participants *
               </label>
@@ -318,7 +334,7 @@ export default function TournamentForm({
                 id="maxPlayers"
                 className={`mt-1 block w-full rounded-md border ${
                   errors.maxPlayers ? "border-red-300" : "border-gray-300"
-                } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900`}
               >
                 {participantOptions.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -336,7 +352,7 @@ export default function TournamentForm({
             <div>
               <label
                 htmlFor="entryFee"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-800"
               >
                 Entry Fee (USD) *
               </label>
@@ -348,7 +364,7 @@ export default function TournamentForm({
                 step="0.01"
                 className={`mt-1 block w-full rounded-md border ${
                   errors.entryFee ? "border-red-300" : "border-gray-300"
-                } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900 placeholder-gray-500`}
                 placeholder="0.00"
               />
               {errors.entryFee && (
@@ -359,14 +375,14 @@ export default function TournamentForm({
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700">
+              <label className="block text-sm font-medium text-gray-800">
                 Prize Pool
               </label>
               <div className="mt-1 p-3 bg-gray-50 rounded-md">
                 <span className="text-lg font-semibold text-gray-900">
                   ${calculatePrizePool().toFixed(2)}
                 </span>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-700">
                   {watch("maxPlayers")} players × ${entryFee} entry fee
                 </p>
               </div>
@@ -375,7 +391,7 @@ export default function TournamentForm({
             <div>
               <label
                 htmlFor="startDate"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-800"
               >
                 Start Date *
               </label>
@@ -385,7 +401,7 @@ export default function TournamentForm({
                 id="startDate"
                 className={`mt-1 block w-full rounded-md border ${
                   errors.startDate ? "border-red-300" : "border-gray-300"
-                } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900`}
               />
               {errors.startDate && (
                 <p className="mt-1 text-sm text-red-600">
@@ -397,7 +413,7 @@ export default function TournamentForm({
             <div>
               <label
                 htmlFor="endDate"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-gray-800"
               >
                 End Date *
               </label>
@@ -407,7 +423,7 @@ export default function TournamentForm({
                 id="endDate"
                 className={`mt-1 block w-full rounded-md border ${
                   errors.endDate ? "border-red-300" : "border-gray-300"
-                } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900`}
               />
               {errors.endDate && (
                 <p className="mt-1 text-sm text-red-600">
@@ -427,7 +443,7 @@ export default function TournamentForm({
               <div>
                 <label
                   htmlFor="bracketType"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-800"
                 >
                   Tournament Format *
                 </label>
@@ -436,7 +452,7 @@ export default function TournamentForm({
                   id="bracketType"
                   className={`mt-1 block w-full rounded-md border ${
                     errors.bracketType ? "border-red-300" : "border-gray-300"
-                  } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                  } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900`}
                 >
                   {bracketTypeOptions.map((option) => (
                     <option key={option.value} value={option.value}>
@@ -449,7 +465,7 @@ export default function TournamentForm({
                     {errors.bracketType.message}
                   </p>
                 )}
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   {
                     bracketTypeOptions.find((opt) => opt.value === bracketType)
                       ?.description
@@ -458,7 +474,7 @@ export default function TournamentForm({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-gray-800 mb-3">
                   Advanced Seeding
                 </label>
                 <div className="flex items-center">
@@ -466,7 +482,7 @@ export default function TournamentForm({
                     type="checkbox"
                     id="useAdvancedSeeding"
                     {...register("useAdvancedSeeding")}
-                    className="h-4 w-4 text-admin-accent focus:ring-admin-accent border-gray-300 rounded"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
                   />
                   <label
                     htmlFor="useAdvancedSeeding"
@@ -475,7 +491,7 @@ export default function TournamentForm({
                     Use advanced seeding algorithms
                   </label>
                 </div>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   Advanced seeding considers player performance, history, and
                   regional factors for more balanced matchups.
                 </p>
@@ -501,10 +517,8 @@ export default function TournamentForm({
                   </span>
                 </div>
                 <p className="mt-2 text-sm text-blue-700">
-                  This tournament will use sophisticated seeding algorithms that
-                  consider multiple factors including player ratings, recent
-                  performance, tournament history, and regional considerations
-                  to create the most balanced matchups possible.
+                  The system will automatically analyze player statistics and
+                  historical performance to create balanced tournament brackets.
                 </p>
               </div>
             )}
@@ -519,7 +533,7 @@ export default function TournamentForm({
               <div>
                 <label
                   htmlFor="firstPrize"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-800"
                 >
                   First Place (%) *
                 </label>
@@ -533,7 +547,7 @@ export default function TournamentForm({
                     errors.prizeBreakdown?.first
                       ? "border-red-300"
                       : "border-gray-300"
-                  } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                  } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900 placeholder-gray-500`}
                   placeholder="50"
                 />
                 {errors.prizeBreakdown?.first && (
@@ -541,7 +555,7 @@ export default function TournamentForm({
                     {errors.prizeBreakdown.first.message}
                   </p>
                 )}
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   ${prizeAmounts.first.toFixed(2)}
                 </p>
               </div>
@@ -549,7 +563,7 @@ export default function TournamentForm({
               <div>
                 <label
                   htmlFor="secondPrize"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-800"
                 >
                   Second Place (%) *
                 </label>
@@ -565,7 +579,7 @@ export default function TournamentForm({
                     errors.prizeBreakdown?.second
                       ? "border-red-300"
                       : "border-gray-300"
-                  } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                  } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900 placeholder-gray-500`}
                   placeholder="30"
                 />
                 {errors.prizeBreakdown?.second && (
@@ -573,7 +587,7 @@ export default function TournamentForm({
                     {errors.prizeBreakdown.second.message}
                   </p>
                 )}
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   ${prizeAmounts.second.toFixed(2)}
                 </p>
               </div>
@@ -581,7 +595,7 @@ export default function TournamentForm({
               <div>
                 <label
                   htmlFor="thirdPrize"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-gray-800"
                 >
                   Third Place (%) *
                 </label>
@@ -595,7 +609,7 @@ export default function TournamentForm({
                     errors.prizeBreakdown?.third
                       ? "border-red-300"
                       : "border-gray-300"
-                  } px-3 py-2 shadow-sm focus:border-admin-accent focus:outline-none focus:ring-admin-accent sm:text-sm`}
+                  } px-3 py-2 shadow-sm focus:border-blue-600 focus:outline-none focus:ring-blue-600 sm:text-sm text-gray-900 placeholder-gray-500`}
                   placeholder="20"
                 />
                 {errors.prizeBreakdown?.third && (
@@ -603,7 +617,7 @@ export default function TournamentForm({
                     {errors.prizeBreakdown.third.message}
                   </p>
                 )}
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   ${prizeAmounts.third.toFixed(2)}
                 </p>
               </div>
@@ -611,7 +625,7 @@ export default function TournamentForm({
 
             <div className="mt-4 p-3 bg-gray-50 rounded-lg">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium text-gray-700">
+                <span className="text-sm font-medium text-gray-800">
                   Total Distribution:
                 </span>
                 <span className="text-sm font-medium text-gray-900">
@@ -637,14 +651,14 @@ export default function TournamentForm({
             <button
               type="button"
               onClick={onCancel}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-accent"
+              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-admin-accent hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-admin-accent disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading
                 ? "Saving..."

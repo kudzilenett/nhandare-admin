@@ -91,7 +91,6 @@ export interface AdminTournament {
     | "DOUBLE_ELIMINATION"
     | "ROUND_ROBIN"
     | "SWISS";
-  useAdvancedSeeding?: boolean;
   bracketConfig?: {
     useAdvancedSeeding: boolean;
     seedingOptions?: {

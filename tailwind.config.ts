@@ -10,17 +10,20 @@ const config: Config = {
     extend: {
       colors: {
         admin: {
-          primary: "#1F2937",
-          secondary: "#374151",
-          accent: "#3B82F6",
-          success: "#10B981",
-          warning: "#F59E0B",
-          error: "#EF4444",
-          surface: "#FFFFFF",
-          textPrimary: "#111827",
-          textSecondary: "#6B7280",
-          textTertiary: "#9CA3AF",
-          textInverse: "#FFFFFF",
+          primary: "#1e293b", // Much darker primary
+          secondary: "#475569", // Darker secondary
+          accent: "#2563eb", // Brighter blue for better visibility
+          accentHover: "#1d4ed8", // Darker blue for hover
+          success: "#059669", // Darker green
+          warning: "#d97706", // Darker orange
+          error: "#dc2626", // Darker red
+          surface: "#ffffff", // White surface
+          textPrimary: "#1e293b", // Dark slate for primary text
+          textSecondary: "#475569", // Darker secondary text
+          textTertiary: "#64748b", // Darker tertiary text
+          textInverse: "#ffffff", // White text on dark backgrounds
+          border: "#e2e8f0", // Border color
+          background: "#f8fafc", // Light background
         },
       },
       fontFamily: {

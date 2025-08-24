@@ -65,7 +65,7 @@ export default function DashboardPage() {
       {/* Page header */}
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-gray-700">
           Overview of your Nhandare gaming platform
         </p>
       </div>
@@ -85,7 +85,7 @@ export default function DashboardPage() {
               >
                 <stat.icon className="h-6 w-6 text-white" aria-hidden="true" />
               </div>
-              <p className="ml-16 truncate text-sm font-medium text-gray-500">
+              <p className="ml-16 truncate text-sm font-medium text-gray-700">
                 {stat.name}
               </p>
             </dt>
@@ -158,11 +158,11 @@ export default function DashboardPage() {
                         </div>
                         <div className="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                           <div>
-                            <p className="text-sm text-gray-500">
+                            <p className="text-sm text-gray-700">
                               {activity.content}
                             </p>
                           </div>
-                          <div className="whitespace-nowrap text-right text-sm text-gray-500">
+                          <div className="whitespace-nowrap text-right text-sm text-gray-700">
                             {activity.time}
                           </div>
                         </div>

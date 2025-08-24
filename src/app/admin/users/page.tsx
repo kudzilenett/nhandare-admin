@@ -39,9 +39,10 @@ const statusColors = {
 };
 
 const roleColors = {
-  user: "bg-blue-100 text-blue-800",
-  moderator: "bg-purple-100 text-purple-800",
-  admin: "bg-indigo-100 text-indigo-800",
+  user: "bg-blue-200 text-blue-800",
+  moderator: "bg-purple-200 text-purple-800",
+  admin: "bg-indigo-200 text-indigo-800",
+  super_admin: "bg-red-200 text-red-800",
 };
 
 const StatusIcon = ({ status }: { status: string }) => {
@@ -372,7 +373,7 @@ export default function UsersPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Users</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <p className="mt-1 text-sm text-gray-700">
             Manage platform users and their accounts
           </p>
         </div>
@@ -389,7 +390,7 @@ export default function UsersPage() {
       <div className="bg-white shadow rounded-lg p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
           <div className="lg:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-800 mb-1">
               Search
             </label>
             <div className="relative">
@@ -399,19 +400,19 @@ export default function UsersPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search users..."
-                className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-10 block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 placeholder-gray-600"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-800 mb-1">
               Status
             </label>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -422,13 +423,13 @@ export default function UsersPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-800 mb-1">
               Role
             </label>
             <select
               value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
               <option value="all">All Roles</option>
               <option value="user">User</option>
@@ -438,13 +439,13 @@ export default function UsersPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-800 mb-1">
               Has Games
             </label>
             <select
               value={hasGamesFilter}
               onChange={(e) => setHasGamesFilter(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
               <option value="all">All</option>
               <option value="yes">Yes</option>
@@ -453,13 +454,13 @@ export default function UsersPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-800 mb-1">
               Has Balance
             </label>
             <select
               value={hasBalanceFilter}
               onChange={(e) => setHasBalanceFilter(e.target.value)}
-              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="block w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
             >
               <option value="all">All</option>
               <option value="yes">Yes</option>
@@ -511,7 +512,7 @@ export default function UsersPage() {
         {isLoading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-2 text-sm text-gray-500">Loading users...</p>
+            <p className="mt-2 text-sm text-gray-700">Loading users...</p>
           </div>
         ) : (
           <>
@@ -530,11 +531,11 @@ export default function UsersPage() {
                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                       />
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       User
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSort("status")}
                     >
                       <div className="flex items-center gap-1">
@@ -543,7 +544,7 @@ export default function UsersPage() {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSort("role")}
                     >
                       <div className="flex items-center gap-1">
@@ -551,11 +552,11 @@ export default function UsersPage() {
                         <SortIcon column="role" />
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Wallet
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSort("totalGamesPlayed")}
                     >
                       <div className="flex items-center gap-1">
@@ -564,7 +565,7 @@ export default function UsersPage() {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSort("winRate")}
                     >
                       <div className="flex items-center gap-1">
@@ -573,7 +574,7 @@ export default function UsersPage() {
                       </div>
                     </th>
                     <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer"
                       onClick={() => handleSort("lastActive")}
                     >
                       <div className="flex items-center gap-1">
@@ -581,7 +582,7 @@ export default function UsersPage() {
                         <SortIcon column="lastActive" />
                       </div>
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -763,8 +764,8 @@ export default function UsersPage() {
                               onClick={() => setCurrentPage(page)}
                               className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                                 currentPage === page
-                                  ? "z-10 bg-blue-50 border-blue-500 text-blue-600"
-                                  : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                                  ? "z-10 bg-blue-600 border-blue-600 text-white"
+                                  : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
                               }`}
                             >
                               {page}

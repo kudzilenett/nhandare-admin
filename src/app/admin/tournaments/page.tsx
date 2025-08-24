@@ -311,7 +311,7 @@ export default function TournamentsPage() {
         <div className="text-red-600 mb-4">Failed to load tournaments</div>
         <button
           onClick={() => refetch()}
-          className="inline-flex items-center rounded-md bg-admin-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+          className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
         >
           Retry
         </button>
@@ -359,7 +359,7 @@ export default function TournamentsPage() {
             <h1 className="text-2xl font-semibold text-gray-900">
               Tournaments
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-gray-700">
               Manage and monitor all tournaments on the platform
             </p>
           </div>
@@ -378,7 +378,7 @@ export default function TournamentsPage() {
             )}
             <button
               onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center rounded-md bg-admin-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-admin-accent"
+              className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
             >
               <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" />
               Create Tournament
@@ -391,13 +391,13 @@ export default function TournamentsPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <MagnifyingGlassIcon className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+              <MagnifyingGlassIcon className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search tournaments..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-admin-accent focus:border-admin-accent"
+                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 text-gray-900 placeholder-gray-500"
               />
             </div>
 
@@ -405,7 +405,7 @@ export default function TournamentsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-admin-accent focus:border-admin-accent"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 text-gray-900"
             >
               <option value="all">All Statuses</option>
               <option value="OPEN">Open</option>
@@ -419,7 +419,7 @@ export default function TournamentsPage() {
             <select
               value={gameTypeFilter}
               onChange={(e) => setGameTypeFilter(e.target.value)}
-              className="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-admin-accent focus:border-admin-accent"
+              className="block w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-600 focus:border-blue-600 text-gray-900"
             >
               <option value="all">All Game Types</option>
               <option value="chess">Chess</option>
@@ -429,7 +429,7 @@ export default function TournamentsPage() {
             </select>
 
             {/* Results count */}
-            <div className="flex items-center text-sm text-gray-500">
+            <div className="flex items-center text-sm text-gray-700">
               <FunnelIcon className="h-4 w-4 mr-1" />
               {isLoading ? "Loading..." : `${tournaments.length} tournaments`}
               {pagination && ` of ${pagination.totalItems}`}
@@ -441,8 +441,8 @@ export default function TournamentsPage() {
         <div className="bg-white shadow rounded-lg overflow-hidden">
           {isLoading ? (
             <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-admin-accent mx-auto"></div>
-              <p className="mt-2 text-sm text-gray-500">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+              <p className="mt-2 text-sm text-gray-700">
                 Loading tournaments...
               </p>
             </div>
@@ -455,7 +455,7 @@ export default function TournamentsPage() {
                       <th className="px-6 py-3 text-left">
                         <input
                           type="checkbox"
-                          className="h-4 w-4 text-admin-accent border-gray-300 rounded focus:ring-admin-accent"
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-600"
                           onChange={(e) => {
                             if (e.target.checked) {
                               setSelectedTournaments(
@@ -472,7 +472,7 @@ export default function TournamentsPage() {
                         />
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:text-gray-900"
                         onClick={() => handleSort("name")}
                       >
                         <div className="flex items-center gap-1">
@@ -481,7 +481,7 @@ export default function TournamentsPage() {
                         </div>
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:text-gray-900"
                         onClick={() => handleSort("status")}
                       >
                         <div className="flex items-center gap-1">
@@ -489,11 +489,11 @@ export default function TournamentsPage() {
                           <SortIcon column="status" />
                         </div>
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                         Game Type
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:text-gray-900"
                         onClick={() => handleSort("participants")}
                       >
                         <div className="flex items-center gap-1">
@@ -501,11 +501,11 @@ export default function TournamentsPage() {
                           <SortIcon column="participants" />
                         </div>
                       </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                         Prize Pool
                       </th>
                       <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:text-gray-700"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:text-gray-900"
                         onClick={() => handleSort("startDate")}
                       >
                         <div className="flex items-center gap-1">
@@ -513,7 +513,7 @@ export default function TournamentsPage() {
                           <SortIcon column="startDate" />
                         </div>
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
                         Actions
                       </th>
                     </tr>
@@ -540,7 +540,7 @@ export default function TournamentsPage() {
                         <td className="px-6 py-4 whitespace-nowrap">
                           <input
                             type="checkbox"
-                            className="h-4 w-4 text-admin-accent border-gray-300 rounded focus:ring-admin-accent"
+                            className="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-600"
                             checked={selectedTournaments.includes(
                               tournament.id
                             )}
@@ -565,7 +565,7 @@ export default function TournamentsPage() {
                             <div className="text-sm font-medium text-gray-900 truncate">
                               {tournament.title}
                             </div>
-                            <div className="text-sm text-gray-500 truncate">
+                            <div className="text-sm text-gray-700 truncate">
                               {tournament.description}
                             </div>
                           </div>
@@ -597,7 +597,7 @@ export default function TournamentsPage() {
                             </span>
                             <div className="ml-2 flex-1 bg-gray-200 rounded-full h-2 max-w-20">
                               <div
-                                className="bg-admin-accent h-2 rounded-full"
+                                className="bg-blue-600 h-2 rounded-full"
                                 style={{
                                   width: `${
                                     (tournament.currentPlayers /
@@ -633,7 +633,7 @@ export default function TournamentsPage() {
                               tournament.status === "CLOSED") && (
                               <button
                                 onClick={() => setEditingTournament(tournament)}
-                                className="text-admin-accent hover:text-blue-700"
+                                className="text-blue-600 hover:text-blue-700"
                                 title="Edit Tournament"
                               >
                                 <PencilIcon className="h-4 w-4" />
@@ -734,7 +734,7 @@ export default function TournamentsPage() {
                   <h3 className="mt-2 text-sm font-medium text-gray-900">
                     No tournaments found
                   </h3>
-                  <p className="mt-1 text-sm text-gray-500">
+                  <p className="mt-1 text-sm text-gray-700">
                     {searchQuery ||
                     statusFilter !== "all" ||
                     gameTypeFilter !== "all"
@@ -747,7 +747,7 @@ export default function TournamentsPage() {
                       <div className="mt-6">
                         <button
                           onClick={() => setShowCreateModal(true)}
-                          className="inline-flex items-center rounded-md bg-admin-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                          className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
                         >
                           <PlusIcon className="-ml-0.5 mr-1.5 h-5 w-5" />
                           Create Tournament
@@ -767,7 +767,7 @@ export default function TournamentsPage() {
               <button
                 onClick={() => setCurrentPage(currentPage - 1)}
                 disabled={!pagination.hasPreviousPage}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
               >
                 Previous
               </button>
@@ -831,8 +831,8 @@ export default function TournamentsPage() {
                           onClick={() => setCurrentPage(page)}
                           className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
                             page === pagination.currentPage
-                              ? "z-10 bg-admin-accent border-admin-accent text-white"
-                              : "bg-white border-gray-300 text-gray-500 hover:bg-gray-50"
+                              ? "z-10 bg-blue-600 border-blue-600 text-white"
+                              : "bg-white border-gray-300 text-gray-700 hover:bg-gray-50"
                           }`}
                         >
                           {page}
@@ -874,13 +874,13 @@ export default function TournamentsPage() {
                 <p className="text-sm font-medium text-gray-900">
                   Description:
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   {selectedTournamentDetails.description}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Status:</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   <span
                     className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                       statusColors[selectedTournamentDetails.status]
@@ -892,7 +892,7 @@ export default function TournamentsPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Game Type:</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   <span
                     className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                       gameTypeColors[
@@ -906,13 +906,13 @@ export default function TournamentsPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Entry Fee:</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   {formatCurrency(selectedTournamentDetails.entryFee)}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Prize Pool:</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   {formatCurrency(selectedTournamentDetails.prizePool)}
                 </p>
               </div>
@@ -920,14 +920,14 @@ export default function TournamentsPage() {
                 <p className="text-sm font-medium text-gray-900">
                   Participants:
                 </p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   {selectedTournamentDetails.currentPlayers}/
                   {selectedTournamentDetails.maxPlayers}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Start Date:</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   {new Date(
                     selectedTournamentDetails.startDate
                   ).toLocaleDateString()}
@@ -935,7 +935,7 @@ export default function TournamentsPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">End Date:</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   {new Date(
                     selectedTournamentDetails.endDate
                   ).toLocaleDateString()}
@@ -943,13 +943,13 @@ export default function TournamentsPage() {
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Created By:</p>
-                <p className="mt-1 text-sm text-gray-500">
+                <p className="mt-1 text-sm text-gray-700">
                   {selectedTournamentDetails.createdBy}
                 </p>
               </div>
               <div>
                 <p className="text-sm font-medium text-gray-900">Public:</p>
-                <p className="mt-1 text-sm text-gray-500">{"Online Only"}</p>
+                <p className="mt-1 text-sm text-gray-700">{"Online Only"}</p>
               </div>
             </div>
             <div className="mt-4 flex justify-end space-x-2">
@@ -958,14 +958,14 @@ export default function TournamentsPage() {
                   setShowTournamentDetails(false);
                   setEditingTournament(selectedTournamentDetails);
                 }}
-                className="inline-flex items-center rounded-md bg-admin-accent px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
+                className="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-700"
               >
                 <PencilIcon className="h-4 w-4 mr-1" />
                 Edit Tournament
               </button>
               <button
                 onClick={() => setShowTournamentDetails(false)}
-                className="inline-flex items-center rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-300"
+                className="inline-flex items-center rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-800 shadow-sm hover:bg-gray-300"
               >
                 Close
               </button>

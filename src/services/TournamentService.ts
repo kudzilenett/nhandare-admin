@@ -53,7 +53,22 @@ export interface CreateTournamentData {
     | "DOUBLE_ELIMINATION"
     | "ROUND_ROBIN"
     | "SWISS";
-  useAdvancedSeeding: boolean;
+  bracketConfig?: {
+    useAdvancedSeeding: boolean;
+    seedingOptions?: {
+      includePerformance: boolean;
+      includeHistory: boolean;
+      includeRegional: boolean;
+      includeConsistency: boolean;
+      performanceWeight: number;
+      historyWeight: number;
+      regionalWeight: number;
+      consistencyWeight: number;
+      ratingWeight: number;
+      recentTournaments: number;
+      regionalRadius: number;
+    };
+  };
 }
 
 export interface UpdateTournamentData extends Partial<CreateTournamentData> {
@@ -248,7 +263,6 @@ class TournamentService {
           | "ROUND_ROBIN"
           | "SWISS"
           | undefined,
-        useAdvancedSeeding: tournament.useAdvancedSeeding || false,
         bracketConfig: tournament.bracketConfig || undefined,
       })
     );
@@ -302,26 +316,7 @@ class TournamentService {
         isOnlineOnly: true, // Default to online-only since isPublic doesn't exist in schema
         prizeBreakdown: data.prizeBreakdown,
         bracketType: data.bracketType,
-        useAdvancedSeeding: data.useAdvancedSeeding,
-        // Add bracket configuration if advanced seeding is enabled
-        bracketConfig: data.useAdvancedSeeding
-          ? {
-              useAdvancedSeeding: true,
-              seedingOptions: {
-                includePerformance: true,
-                includeHistory: true,
-                includeRegional: false,
-                includeConsistency: true,
-                performanceWeight: 0.25,
-                historyWeight: 0.2,
-                regionalWeight: 0.1,
-                consistencyWeight: 0.05,
-                ratingWeight: 0.4,
-                recentTournaments: 5,
-                regionalRadius: 100,
-              },
-            }
-          : undefined,
+        bracketConfig: data.bracketConfig,
       };
 
       console.log("Creating tournament with data:", backendData);

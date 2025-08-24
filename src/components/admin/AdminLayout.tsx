@@ -65,7 +65,7 @@ export default function AdminLayout({
             <h1 className="text-xl font-bold text-gray-900">Nhandare Admin</h1>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-gray-700 hover:text-gray-900"
             >
               <XMarkIcon className="h-6 w-6" />
             </button>
@@ -79,8 +79,8 @@ export default function AdminLayout({
                   href={item.href}
                   className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                     isActive
-                      ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600 shadow-sm"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent"
+                      ? "bg-blue-50 text-blue-800 border-l-4 border-blue-600 shadow-sm"
+                      : "text-gray-800 hover:bg-gray-100 hover:text-gray-900 border-l-4 border-transparent"
                   }`}
                   onClick={() => setSidebarOpen(false)}
                 >
@@ -88,7 +88,7 @@ export default function AdminLayout({
                     className={`mr-3 h-5 w-5 ${
                       isActive
                         ? "text-blue-600"
-                        : "text-gray-500 group-hover:text-gray-700"
+                        : "text-gray-600 group-hover:text-gray-800"
                     }`}
                   />
                   {item.name}
@@ -114,15 +114,15 @@ export default function AdminLayout({
                   href={item.href}
                   className={`group flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${
                     isActive
-                      ? "bg-blue-50 text-blue-700 border-l-4 border-blue-600 shadow-sm"
-                      : "text-gray-700 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent"
+                      ? "bg-blue-50 text-blue-800 border-l-4 border-blue-600 shadow-sm"
+                      : "text-gray-800 hover:bg-gray-100 hover:text-gray-900 border-l-4 border-transparent"
                   }`}
                 >
                   <item.icon
                     className={`mr-3 h-5 w-5 ${
                       isActive
                         ? "text-blue-600"
-                        : "text-gray-500 group-hover:text-gray-700"
+                        : "text-gray-600 group-hover:text-gray-800"
                     }`}
                   />
                   {item.name}
@@ -139,7 +139,7 @@ export default function AdminLayout({
         <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
           <button
             type="button"
-            className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+            className="-m-2.5 p-2.5 text-gray-700 hover:text-gray-900 lg:hidden"
             onClick={() => setSidebarOpen(true)}
           >
             <Bars3Icon className="h-6 w-6" />
@@ -154,13 +154,13 @@ export default function AdminLayout({
                   <p className="text-sm font-semibold text-gray-900">
                     {user?.name}
                   </p>
-                  <p className="text-xs text-gray-500 font-medium">
+                  <p className="text-xs text-gray-700 font-medium">
                     {user?.role}
                   </p>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  className="flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-800 hover:bg-gray-100 transition-colors duration-200"
                 >
                   <ArrowRightOnRectangleIcon className="h-5 w-5" />
                   <span className="hidden sm:block">Logout</span>
