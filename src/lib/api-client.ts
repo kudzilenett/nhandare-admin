@@ -13,7 +13,8 @@ class ApiClient {
   } | null = null; // Will be injected to avoid circular dependency
 
   constructor() {
-    this.baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    this.baseURL =
+      process.env.NEXT_PUBLIC_API_URL || "https://51.20.12.21.nip.io";
 
     this.client = axios.create({
       baseURL: this.baseURL,
