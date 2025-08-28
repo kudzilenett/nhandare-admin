@@ -514,7 +514,7 @@ class UserService {
   async exportUserData(
     filters?: UserFilters,
     format: "csv" | "json" | "xlsx" = "csv"
-  ) {
+  ): Promise<Blob> {
     const params = new URLSearchParams();
     if (format) params.append("format", format);
     if (filters) {
@@ -531,7 +531,7 @@ class UserService {
       });
     }
 
-    const response = await apiClient.get(
+    const response = await apiClient.get<Blob>(
       `${this.baseUrl}/export?${params.toString()}`,
       {
         responseType: "blob",
@@ -541,7 +541,7 @@ class UserService {
   }
 
   async generateUserReport(id: string): Promise<Blob> {
-    const response = await apiClient.get(`${this.baseUrl}/${id}/report`, {
+    const response = await apiClient.get<Blob>(`${this.baseUrl}/${id}/report`, {
       responseType: "blob",
     });
     return response;

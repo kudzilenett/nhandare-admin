@@ -541,13 +541,13 @@ export class PaymentService {
       }
     });
 
-    const response = await apiClient.get(
+    const response = await apiClient.get<Blob>(
       `/api/payments/admin/export?${params}`,
       {
         responseType: "blob",
       }
     );
-    return (response as { data: Blob }).data;
+    return response;
   }
 
   /**

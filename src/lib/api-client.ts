@@ -125,6 +125,12 @@ class ApiClient {
   // Generic HTTP methods
   async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.get<T>(url, config);
+
+    // Handle blob responses specially
+    if (config?.responseType === "blob") {
+      return response.data as T;
+    }
+
     return response.data;
   }
 

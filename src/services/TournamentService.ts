@@ -579,8 +579,8 @@ class TournamentService {
   async exportTournamentData(
     id: string,
     format: "csv" | "json" | "xlsx" = "csv"
-  ) {
-    const response = await apiClient.get(
+  ): Promise<Blob> {
+    const response = await apiClient.get<Blob>(
       `${this.baseUrl}/${id}/export?format=${format}`,
       {
         responseType: "blob",
@@ -589,8 +589,8 @@ class TournamentService {
     return response;
   }
 
-  async exportTournamentReport(id: string) {
-    const response = await apiClient.get(`${this.baseUrl}/${id}/report`, {
+  async exportTournamentReport(id: string): Promise<Blob> {
+    const response = await apiClient.get<Blob>(`${this.baseUrl}/${id}/report`, {
       responseType: "blob",
     });
     return response;
