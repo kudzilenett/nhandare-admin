@@ -318,7 +318,7 @@ export class PaymentService {
       params.append("endDate", dateRange.end);
     }
 
-    const response = await apiClient.get(
+    const response = await apiClient.get<{ data: PaymentAnalytics }>(
       `/api/payments/admin/analytics?${params}`
     );
     return response.data;
@@ -328,9 +328,9 @@ export class PaymentService {
    * Get available payment methods
    */
   async getPaymentMethods(currency: string = "USD"): Promise<PaymentMethod[]> {
-    const response = await apiClient.get(
-      `/payments/methods?currency=${currency}`
-    );
+    const response = await apiClient.get<{
+      data: { allMethods: PaymentMethod[] };
+    }>(`/payments/methods?currency=${currency}`);
     return response.data.allMethods || [];
   }
 
@@ -338,7 +338,9 @@ export class PaymentService {
    * Get mobile money providers for Zimbabwe
    */
   async getMobileMoneyProviders(): Promise<MobileMoneyProvider[]> {
-    const response = await apiClient.get("/payments/mobile-money");
+    const response = await apiClient.get<{ data: MobileMoneyProvider[] }>(
+      "/payments/mobile-money"
+    );
     return response.data || [];
   }
 
@@ -346,7 +348,9 @@ export class PaymentService {
    * Test payment gateway connection
    */
   async testConnection(): Promise<{ success: boolean; message: string }> {
-    const response = await apiClient.get("/payments/test-connection");
+    const response = await apiClient.get<{
+      data: { success: boolean; message: string };
+    }>("/payments/test-connection");
     return response.data;
   }
 
@@ -354,7 +358,9 @@ export class PaymentService {
    * Get supported currencies
    */
   async getSupportedCurrencies(): Promise<string[]> {
-    const response = await apiClient.get("/payments/currencies");
+    const response = await apiClient.get<{ data: string[] }>(
+      "/payments/currencies"
+    );
     return response.data || ["USD"];
   }
 
@@ -371,9 +377,14 @@ export class PaymentService {
     totalSpent: number;
     totalEarned: number;
   }> {
-    const response = await apiClient.get(
-      `/api/payments/admin/user/${userId}?page=${page}&limit=${limit}`
-    );
+    const response = await apiClient.get<{
+      data: {
+        payments: AdminPayment[];
+        pagination: PaginationInfo;
+        totalSpent: number;
+        totalEarned: number;
+      };
+    }>(`/api/payments/admin/user/${userId}?page=${page}&limit=${limit}`);
     return response.data;
   }
 
@@ -390,7 +401,14 @@ export class PaymentService {
     totalRevenue: number;
     participantsPaid: number;
   }> {
-    const response = await apiClient.get(
+    const response = await apiClient.get<{
+      data: {
+        payments: AdminPayment[];
+        pagination: PaginationInfo;
+        totalRevenue: number;
+        participantsPaid: number;
+      };
+    }>(
       `/api/payments/admin/tournament/${tournamentId}?page=${page}&limit=${limit}`
     );
     return response.data;
@@ -416,9 +434,12 @@ export class PaymentService {
     }
 
     try {
-      const response = await apiClient.get<{ data: WithdrawalRequest[] }>(
-        `/api/payments/admin/withdrawals?${params}`
-      );
+      const response = await apiClient.get<{
+        data: {
+          withdrawals: WithdrawalRequest[];
+          pagination: PaginationInfo;
+        };
+      }>(`/api/payments/admin/withdrawals?${params}`);
       console.log("Withdrawal requests response:", response);
       return response.data;
     } catch (error) {
@@ -487,7 +508,14 @@ export class PaymentService {
     }
 
     const response = await apiClient.get(`/api/payments/admin/audit?${params}`);
-    return response.data;
+    return (
+      response as {
+        data: {
+          auditEntries: PaymentAuditEntry[];
+          pagination: PaginationInfo;
+        };
+      }
+    ).data;
   }
 
   /**
@@ -499,13 +527,14 @@ export class PaymentService {
   ): Promise<Blob> {
     const params = new URLSearchParams({ format });
 
-    // Add filters
     Object.entries(filters).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         value.forEach((v) => params.append(key, v));
       } else if (value && typeof value === "object") {
         Object.entries(value).forEach(([subKey, subValue]) => {
-          params.append(`${key}.${subKey}`, subValue.toString());
+          if (subValue) {
+            params.append(`${key}.${subKey}`, subValue.toString());
+          }
         });
       } else if (value) {
         params.append(key, value.toString());
@@ -518,7 +547,7 @@ export class PaymentService {
         responseType: "blob",
       }
     );
-    return response.data;
+    return (response as { data: Blob }).data;
   }
 
   /**
@@ -530,7 +559,14 @@ export class PaymentService {
     currencies: FilterOption[];
     paymentMethods: FilterOption[];
   }> {
-    const response = await apiClient.get("/api/payments/admin/filters");
+    const response = await apiClient.get<{
+      data: {
+        statuses: FilterOption[];
+        types: FilterOption[];
+        currencies: FilterOption[];
+        paymentMethods: FilterOption[];
+      };
+    }>("/api/payments/admin/filters");
     return response.data;
   }
 
@@ -551,7 +587,18 @@ export class PaymentService {
     const response = await apiClient.get(
       `/api/payments/admin/trends?period=${period}&limit=${limit}`
     );
-    return response.data || [];
+    return (
+      (
+        response as {
+          data: Array<{
+            date: string;
+            revenue: number;
+            transactions: number;
+            successRate: number;
+          }>;
+        }
+      ).data || []
+    );
   }
 
   /**
@@ -571,7 +618,15 @@ export class PaymentService {
       status,
       reason,
     });
-    return response.data;
+    return (
+      response as {
+        data: {
+          success: number;
+          failed: number;
+          errors: Array<{ paymentId: string; error: string }>;
+        };
+      }
+    ).data;
   }
 
   /**
@@ -581,7 +636,7 @@ export class PaymentService {
     const response = await apiClient.get(
       `/api/payments/admin/search?reference=${encodeURIComponent(reference)}`
     );
-    return response.data || [];
+    return (response as { data: AdminPayment[] }).data || [];
   }
 
   /**
@@ -612,9 +667,21 @@ export class PaymentService {
       params.append("status", status);
     }
 
-    const response = await apiClient.get(
-      `/api/payments/admin/disputes?${params}`
-    );
+    const response = await apiClient.get<{
+      data: {
+        disputes: Array<{
+          id: string;
+          paymentId: string;
+          userId: string;
+          reason: string;
+          status: "open" | "investigating" | "resolved" | "closed";
+          priority: "low" | "medium" | "high" | "urgent";
+          createdAt: string;
+          updatedAt: string;
+        }>;
+        pagination: PaginationInfo;
+      };
+    }>(`/api/payments/admin/disputes?${params}`);
     return response.data;
   }
 }
