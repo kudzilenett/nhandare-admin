@@ -871,7 +871,9 @@ export default function PaymentsPage() {
           onPaymentUpdate={(paymentId, updates) => {
             setPayments((prev) =>
               prev.map((payment) =>
-                payment.id === paymentId ? { ...payment, ...updates } : payment
+                payment.id === paymentId
+                  ? { ...payment, ...(updates as object) }
+                  : payment
               )
             );
           }}

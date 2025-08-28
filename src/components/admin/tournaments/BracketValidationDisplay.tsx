@@ -4,7 +4,7 @@ interface BracketStructure {
   type: string;
   totalRounds: number;
   totalMatches: number;
-  players: any[];
+  players: unknown[];
   generatedAt: Date;
   validationStatus: "valid" | "invalid" | "pending";
   validationErrors?: string[];

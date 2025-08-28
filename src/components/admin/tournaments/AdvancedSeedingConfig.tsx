@@ -25,7 +25,10 @@ const AdvancedSeedingConfig: React.FC<AdvancedSeedingConfigProps> = ({
   onOptionsChange,
   disabled = false,
 }) => {
-  const updateOption = (key: keyof SeedingOptions, value: any) => {
+  const updateOption = (
+    key: keyof SeedingOptions,
+    value: SeedingOptions[keyof SeedingOptions]
+  ) => {
     onOptionsChange({ ...options, [key]: value });
   };
 
@@ -33,20 +36,22 @@ const AdvancedSeedingConfig: React.FC<AdvancedSeedingConfigProps> = ({
     const newOptions = { ...options, [key]: value };
 
     // Recalculate other weights to maintain 100% total
-    const totalOtherWeights = Object.keys(newOptions)
-      .filter((k) => k !== key && k.endsWith("Weight"))
-      .reduce(
-        (sum, k) => sum + (newOptions[k as keyof SeedingOptions] as number),
-        0
-      );
+    const weightKeys = Object.keys(newOptions).filter(
+      (k): k is keyof SeedingOptions => k !== key && k.endsWith("Weight")
+    ) as Array<keyof SeedingOptions>;
+
+    const totalOtherWeights = weightKeys.reduce(
+      (sum, k) => sum + (newOptions[k] as number),
+      0
+    );
 
     const remainingWeight = 1 - value;
     const scaleFactor = remainingWeight / totalOtherWeights;
 
-    Object.keys(newOptions).forEach((k) => {
-      if (k !== key && k.endsWith("Weight")) {
-        newOptions[k as keyof SeedingOptions] =
-          (newOptions[k as keyof SeedingOptions] as number) * scaleFactor;
+    weightKeys.forEach((k) => {
+      if (k.endsWith("Weight")) {
+        (newOptions as Record<keyof SeedingOptions, unknown>)[k] =
+          (newOptions[k] as number) * scaleFactor;
       }
     });
 

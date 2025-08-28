@@ -27,8 +27,10 @@ const BracketManagement: React.FC<BracketManagementProps> = ({
     try {
       await action();
       alert(`${actionName} completed successfully`);
-    } catch (error: any) {
-      alert(`Failed to ${actionName.toLowerCase()}: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "An unknown error occurred";
+      alert(`Failed to ${actionName.toLowerCase()}: ${errorMessage}`);
     } finally {
       setIsLoading(false);
     }

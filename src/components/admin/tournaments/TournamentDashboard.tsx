@@ -258,7 +258,7 @@ const TournamentDashboard: React.FC<TournamentDashboardProps> = ({
             </svg>
             <div className="flex-1">
               <p className="text-gray-700">
-                Tournament "Summer Championship" bracket generated
+                Tournament &quot;Summer Championship&quot; bracket generated
               </p>
             </div>
             <span className="text-xs text-gray-500">2h ago</span>
@@ -278,7 +278,7 @@ const TournamentDashboard: React.FC<TournamentDashboardProps> = ({
             </svg>
             <div className="flex-1">
               <p className="text-gray-700">
-                Tournament "Winter League" validation completed
+                Tournament &quot;Winter League&quot; validation completed
               </p>
             </div>
             <span className="text-xs text-gray-500">4h ago</span>
@@ -294,7 +294,7 @@ const TournamentDashboard: React.FC<TournamentDashboardProps> = ({
             </svg>
             <div className="flex-1">
               <p className="text-gray-700">
-                15 new players joined "Spring Cup"
+                15 new players joined &quot;Spring Cup&quot;
               </p>
             </div>
             <span className="text-xs text-gray-500">6h ago</span>

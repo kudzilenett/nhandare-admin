@@ -14,8 +14,39 @@ import {
   FlagIcon,
 } from "@heroicons/react/24/outline";
 
+// Types
+interface FlaggedMessage {
+  id: number;
+  userId: string;
+  username: string;
+  message: string;
+  timestamp: string;
+  reason: string;
+  status: string;
+  severity: string;
+}
+
+interface BannedUser {
+  id: string;
+  username: string;
+  email: string;
+  banReason: string;
+  banDate: string;
+  banExpiry: string;
+  status: string;
+}
+
+interface ModerationStats {
+  totalFlagged: number;
+  pendingReview: number;
+  reviewedToday: number;
+  bannedUsers: number;
+  suspendedUsers: number;
+  autoFiltered: number;
+}
+
 // Mock data - replace with real API calls
-const flaggedMessages = [
+const flaggedMessages: FlaggedMessage[] = [
   {
     id: 1,
     userId: "user123",
@@ -93,14 +124,23 @@ const statusColors = {
 
 export default function ModerationPage() {
   const [selectedTab, setSelectedTab] = useState("flagged");
-  const [selectedMessage, setSelectedMessage] = useState<any>(null);
+  const [selectedMessage, setSelectedMessage] = useState<FlaggedMessage | null>(
+    null
+  );
   const [showMessageModal, setShowMessageModal] = useState(false);
   const [autoFilterEnabled, setAutoFilterEnabled] = useState(true);
 
   // Real data state
-  const [flaggedMessages, setFlaggedMessages] = useState<any[]>([]);
-  const [bannedUsers, setBannedUsers] = useState<any[]>([]);
-  const [moderationStats, setModerationStats] = useState<any>({});
+  const [flaggedMessages, setFlaggedMessages] = useState<FlaggedMessage[]>([]);
+  const [bannedUsers, setBannedUsers] = useState<BannedUser[]>([]);
+  const [moderationStats, setModerationStats] = useState<ModerationStats>({
+    totalFlagged: 0,
+    pendingReview: 0,
+    reviewedToday: 0,
+    bannedUsers: 0,
+    suspendedUsers: 0,
+    autoFiltered: 0,
+  });
   const [isLoading, setIsLoading] = useState(false);
 
   // Fetch real data on component mount

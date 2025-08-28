@@ -44,10 +44,10 @@ const userFormSchema = z
         "Please enter a valid phone number"
       ),
     role: z.enum(["user", "admin", "moderator"], {
-      required_error: "Please select a role",
+      error: "Please select a role",
     }),
     status: z.enum(["active", "inactive"], {
-      required_error: "Please select a status",
+      error: "Please select a status",
     }),
     password: z
       .string()

@@ -27,7 +27,7 @@ interface PaymentDetailsModalProps {
   isOpen: boolean;
   onClose: () => void;
   paymentId: string;
-  onPaymentUpdate?: (paymentId: string, updates: any) => void;
+  onPaymentUpdate?: (paymentId: string, updates: unknown) => void;
 }
 
 export default function PaymentDetailsModal({
@@ -138,7 +138,13 @@ export default function PaymentDetailsModal({
     try {
       await paymentService.updatePaymentStatus({
         paymentId: payment.id,
-        status: newStatus as any,
+        status: newStatus as
+          | "completed"
+          | "pending"
+          | "processing"
+          | "failed"
+          | "cancelled"
+          | "refunded",
         reason: statusReason,
       });
 
@@ -294,7 +300,9 @@ export default function PaymentDetailsModal({
                         ].map((tab) => (
                           <button
                             key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
+                            onClick={() =>
+                              setActiveTab(tab.id as typeof activeTab)
+                            }
                             className={`group inline-flex items-center py-2 px-1 border-b-2 font-medium text-sm ${
                               activeTab === tab.id
                                 ? "border-blue-500 text-blue-600"

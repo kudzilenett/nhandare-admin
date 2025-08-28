@@ -41,7 +41,7 @@ interface UserDetailsModalProps {
   } | null;
   isOpen: boolean;
   onClose: () => void;
-  onEdit?: (user: any) => void;
+  onEdit?: (user: unknown) => void;
 }
 
 export default function UserDetailsModal({
@@ -300,7 +300,7 @@ export default function UserDetailsModal({
               return (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as typeof activeTab)}
                   className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center ${
                     activeTab === tab.id
                       ? "border-admin-accent text-admin-accent"
