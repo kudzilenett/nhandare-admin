@@ -269,7 +269,7 @@ export class PaymentService {
     }
 
     const response = await apiClient.get(`/api/payments/admin?${params}`);
-    return (response as any).data as PaymentListResponse;
+    return (response as { data: PaymentListResponse }).data;
   }
 
   /**
@@ -277,7 +277,7 @@ export class PaymentService {
    */
   async getPaymentDetails(paymentId: string): Promise<PaymentDetails> {
     const response = await apiClient.get(`/api/payments/admin/${paymentId}`);
-    return (response as any).data as PaymentDetails;
+    return (response as { data: PaymentDetails }).data;
   }
 
   /**
@@ -302,7 +302,7 @@ export class PaymentService {
         reason: data.reason,
       }
     );
-    return (response as any).data;
+    return (response as { data: PaymentRefund }).data;
   }
 
   /**
@@ -416,7 +416,7 @@ export class PaymentService {
     }
 
     try {
-      const response = await apiClient.get<any>(
+      const response = await apiClient.get<{ data: WithdrawalRequest[] }>(
         `/api/payments/admin/withdrawals?${params}`
       );
       console.log("Withdrawal requests response:", response);
@@ -456,7 +456,7 @@ export class PaymentService {
     }
 
     try {
-      const response = await apiClient.get<any>(
+      const response = await apiClient.get<{ data: WithdrawalStats }>(
         `/api/payments/admin/withdrawals/stats?${params}`
       );
       console.log("Withdrawal stats response:", response);

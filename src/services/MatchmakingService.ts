@@ -42,7 +42,10 @@ export class MatchmakingService {
   /**
    * Get matchmaking analytics
    */
-  async getAnalytics(gameType?: string, days = 7): Promise<MatchmakingResponse> {
+  async getAnalytics(
+    gameType?: string,
+    days = 7
+  ): Promise<MatchmakingResponse> {
     const params = new URLSearchParams();
     if (gameType) params.append("gameType", gameType);
     params.append("days", days.toString());
@@ -63,7 +66,7 @@ export class MatchmakingService {
   /**
    * Get queue status for specific game
    */
-  async getQueueStatus(gameType: string): Promise<any> {
+  async getQueueStatus(gameType: string): Promise<Record<string, unknown>> {
     return apiClient.get(`/api/games/queue-status/${gameType}`);
   }
 }
